@@ -90,25 +90,42 @@
     });
 
     map.on('load', function () {
-      map.addSource('base-voronoi', {
+      
+      map.addSource('base-2001', {
         'type': 'raster',
-        'url': 'mapbox://robsalasco.2ipd1pfp',
+        'url': 'mapbox://robsalasco.2ftxj5m5',
+        "minzoom": 0,
+        "maxzoom": 14
+      });
+      
+      map.addSource('base-2011', {
+        'type': 'raster',
+        'url': 'mapbox://robsalasco.1zetngbs',
         "minzoom": 0,
         "maxzoom": 14
       });
 
-      map.addSource('base-voronoi2', {
+      map.addSource('base-2021', {
         'type': 'raster',
-        'url': 'mapbox://robsalasco.1feag1hk',
+        'url': 'mapbox://robsalasco.6ejw2i5j',
         "minzoom": 0,
         "maxzoom": 14
       });
-
+      
+      map.addLayer({
+        'id': '2001',
+        'type': 'raster',
+        'source': 'base-2001',
+        'layout': {
+          // Make the layer visible by default.
+          'visibility': 'none'
+        },
+      });
 
       map.addLayer({
         'id': '2011',
         'type': 'raster',
-        'source': 'base-voronoi',
+        'source': 'base-2011',
         'layout': {
           // Make the layer visible by default.
           'visibility': 'none'
@@ -118,7 +135,7 @@
       map.addLayer({
         'id': '2021',
         'type': 'raster',
-        'source': 'base-voronoi2',
+        'source': 'base-2021',
         'layout': {
           // Make the layer visible by default.
           'visibility': 'none'
@@ -138,7 +155,7 @@
       //});
 
       // Enumerate ids of the layers.
-      const toggleableLayerIds = ['2011', '2021'];
+      const toggleableLayerIds = ['2001','2011', '2021'];
 
       // Set up the corresponding toggle button for each layer.
       for (const id of toggleableLayerIds) {
