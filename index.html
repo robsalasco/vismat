@@ -264,10 +264,19 @@
 
             const layers = document.getElementById('menu');
             layers.appendChild(link);
-            
+
             if (map.getLayoutProperty('2001','visibility')) {
               document.getElementById("2001").className = 'active';
             } 
+
+            map.moveLayer("state-label");
+            map.moveLayer("settlement-label");
+            map.moveLayer("settlement-subdivision-label");
+            map.moveLayer("road-primary");
+            map.moveLayer("road-secondary-tertiary");
+            map.moveLayer("road-street");
+            map.moveLayer("poi-label");
+
         }
     });
     </script>
