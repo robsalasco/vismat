@@ -224,6 +224,8 @@
             link.textContent = id;
 
 
+            
+
             // Show or hide layer when the toggle is clicked.
             link.onclick = function(e) {
                 const clickedLayer = this.textContent;
@@ -262,6 +264,10 @@
 
             const layers = document.getElementById('menu');
             layers.appendChild(link);
+            
+            if (map.getLayoutProperty('2001','visibility')) {
+              document.getElementById("2001").className = 'active';
+            } 
         }
     });
     </script>
