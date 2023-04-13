@@ -2,145 +2,198 @@
 <html>
 
 <head>
-  <meta charset="utf-8" />
-  <title>mtnlss vis</title>
-  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
-  <style>
+    <meta charset="utf-8" />
+    <title>mtnlss vis</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+    <style>
     body {
-      margin: 0;
-      padding: 0;
+        margin: 0;
+        padding: 0;
     }
 
     #map {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 100%;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
     }
 
     #controls {
-      position: absolute;
-      top: 300px;
-      left: 1080px;
-      width: 200px;
-      height: 300px;
-      background-color: #FFF;
+        position: absolute;
+        top: 300px;
+        left: 1080px;
+        width: 200px;
+        height: 300px;
+        background-color: #FFF;
     }
 
     #menu {
-      background: #fff;
-      position: absolute;
-      z-index: 1;
-      top: 10px;
-      right: 10px;
-      border-radius: 3px;
-      width: 120px;
-      border: 1px solid rgba(0, 0, 0, 0.4);
-      font-family: 'Open Sans', sans-serif;
+        background: #fff;
+        position: absolute;
+        z-index: 1;
+        top: 10px;
+        right: 10px;
+        border-radius: 3px;
+        width: 120px;
+        border: 1px solid rgba(0, 0, 0, 0.4);
+        font-family: 'Open Sans', sans-serif;
     }
 
     #menu a {
-      font-size: 10px;
-      color: #404040;
-      display: block;
-      margin: 0;
-      padding: 0;
-      padding: 5px;
-      text-decoration: none;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.25);
-      text-align: center;
+        font-size: 10px;
+        color: #404040;
+        display: block;
+        margin: 0;
+        padding: 0;
+        padding: 5px;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+        text-align: center;
     }
 
     #menu a:last-child {
-      border: none;
+        border: none;
     }
 
     #menu a:hover {
-      background-color: #f8f8f8;
-      color: #404040;
+        background-color: #f8f8f8;
+        color: #404040;
     }
 
     #menu a.active {
-      background-color: #d3d3d3;
-      color: #000;
+        background-color: #d3d3d3;
+        color: #000;
     }
 
-  </style>
+    #legend {
+        font-size: 20px;
+        position: absolute;
+        right: 10px;
+        bottom: 50px;
+        width: 230px;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.8);
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    .legend span {
+        display: block;
+        margin-bottom: 1px;
+        height: 16px;
+        width: 100%;
+        font-size: 10px;
+        color: #404040;
+    }
+
+        .legend label{
+                  display: block;
+        font-size: 10px;
+        color: #404040;
+        height: 18px;
+
+        }
+
+    </style>
 </head>
 
 <body>
-  <style>
+    <style>
     #map canvas {
-      cursor: crosshair;
+        cursor: crosshair;
     }
-  </style>
-
-  <nav id="menu"></nav>
-  <div id="map"></div>
-  <pre id="features"></pre>
-  <script>
+    </style>
+    <nav id="menu"></nav>
+    <div id="map"></div>
+    <pre id="features"></pre>
+    <div id='legend'>
+        <nav class='legend clearfix'>
+            <div style="display: inline-block; width: 20px;">
+                <span style='background:#ca0003;'></span>
+                <span style='background:#ff6164;'></span>
+                <span style='background:#fec59e;'></span>
+                <span style='background:#ff821b;'></span>
+                <span style='background:#91ff91;'></span>
+                <span style='background:#1c451c;'></span>
+                <span style='background:#b9ef4d;'></span>
+                <span style='background:#7a0177;'></span>
+                <span style='background:#277AFF;'></span>
+            </div>
+            <div style="display: inline-block;">
+                <label>Superficie compacta construida alta densidad</label>
+                <label>Superficie compacta baja densidad</label>
+                <label>Superficie construida tipo periurbano</label>
+                <label>Casas aisladas</label>
+                <label>Bosque denso</label>
+                <label>Bosque mediana densidad</label>
+                <label>Bosques o vegetación de baja densidad</label>
+                <label>Humedal</label>
+                <label>Agua</label>
+            </div>
+        </nav>
+    </div>
+    <script>
     mapboxgl.accessToken = 'pk.eyJ1Ijoicm9ic2FsYXNjbyIsImEiOiJjaWcxbzh1bjAxMHhodXdsdnczZ28xOHc1In0.WkFivOlHKIMwx30ssZorBw';
     var map = new mapboxgl.Map({
-      container: 'map', // container id
-      style: 'mapbox://styles/robsalasco/clge5rhoq004401mu59ogtcto', // style URL
-      center: [-73.215981,-39.828709], // starting position [lng, lat]
-      zoom: 10 // starting zoom
+        container: 'map', // container id
+        style: 'mapbox://styles/robsalasco/clge5rhoq004401mu59ogtcto', // style URL
+        center: [-73.215981, -39.828709], // starting position [lng, lat]
+        zoom: 10 // starting zoom
     });
 
-    map.on('load', function () {
-      
-      map.addSource('base-2001', {
-        'type': 'raster',
-        'url': 'mapbox://robsalasco.2ftxj5m5',
-        "minzoom": 0,
-        "maxzoom": 14
-      });
-      
-      map.addSource('base-2011', {
-        'type': 'raster',
-        'url': 'mapbox://robsalasco.1zetngbs',
-        "minzoom": 0,
-        "maxzoom": 14
-      });
+    map.on('load', function() {
 
-      map.addSource('base-2021', {
-        'type': 'raster',
-        'url': 'mapbox://robsalasco.6ejw2i5j',
-        "minzoom": 0,
-        "maxzoom": 14
-      });
-      
-      map.addLayer({
-        'id': '2001',
-        'type': 'raster',
-        'source': 'base-2001',
-        'layout': {
-          // Make the layer visible by default.
-          'visibility': 'none'
-        },
-      });
+        map.addSource('base-2001', {
+            'type': 'raster',
+            'url': 'mapbox://robsalasco.2ftxj5m5',
+            "minzoom": 0,
+            "maxzoom": 14
+        });
 
-      map.addLayer({
-        'id': '2011',
-        'type': 'raster',
-        'source': 'base-2011',
-        'layout': {
-          // Make the layer visible by default.
-          'visibility': 'none'
-        },
-      });
+        map.addSource('base-2011', {
+            'type': 'raster',
+            'url': 'mapbox://robsalasco.1zetngbs',
+            "minzoom": 0,
+            "maxzoom": 14
+        });
 
-      map.addLayer({
-        'id': '2021',
-        'type': 'raster',
-        'source': 'base-2021',
-        'layout': {
-          // Make the layer visible by default.
-          'visibility': 'none'
-        },
-      });
+        map.addSource('base-2021', {
+            'type': 'raster',
+            'url': 'mapbox://robsalasco.6ejw2i5j',
+            "minzoom": 0,
+            "maxzoom": 14
+        });
+
+        map.addLayer({
+            'id': '2001',
+            'type': 'raster',
+            'source': 'base-2001',
+            'layout': {
+                // Make the layer visible by default.
+                'visibility': 'visible'
+            },
+        });
+
+        map.addLayer({
+            'id': '2011',
+            'type': 'raster',
+            'source': 'base-2011',
+            'layout': {
+                // Make the layer visible by default.
+                'visibility': 'none'
+            },
+        });
+
+        map.addLayer({
+            'id': '2021',
+            'type': 'raster',
+            'source': 'base-2021',
+            'layout': {
+                // Make the layer visible by default.
+                'visibility': 'none'
+            },
+        });
 
 
 
@@ -148,72 +201,70 @@
 
     map.on('idle', () => {
 
-      //activeLayers = .map(function (feat) {
-      //feat.filter(function(item) {
-      //     return item.layout.visibility === "none"
-      //   });
-      //});
+        //activeLayers = .map(function (feat) {
+        //feat.filter(function(item) {
+        //     return item.layout.visibility === "none"
+        //   });
+        //});
 
-      // Enumerate ids of the layers.
-      const toggleableLayerIds = ['2001','2011', '2021'];
+        // Enumerate ids of the layers.
+        const toggleableLayerIds = ['2001', '2011', '2021'];
 
-      // Set up the corresponding toggle button for each layer.
-      for (const id of toggleableLayerIds) {
-        // Skip layers that already have a button set up.
-        if (document.getElementById(id)) {
-          continue;
+        // Set up the corresponding toggle button for each layer.
+        for (const id of toggleableLayerIds) {
+            // Skip layers that already have a button set up.
+            if (document.getElementById(id)) {
+                continue;
+            }
+
+            // Create a link.
+            const link = document.createElement('a');
+            link.id = id;
+            link.href = '#';
+            link.textContent = id;
+
+
+            // Show or hide layer when the toggle is clicked.
+            link.onclick = function(e) {
+                const clickedLayer = this.textContent;
+                e.preventDefault();
+                e.stopPropagation();
+
+                const visibility = map.getLayoutProperty(
+                    clickedLayer,
+                    'visibility'
+                );
+
+                // Toggle layer visibility by changing the layout object's visibility property.
+                if (visibility === 'visible') {
+                    map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+
+                    this.className = '';
+                } else {
+                    this.className = 'active';
+                    map.setLayoutProperty(
+                        clickedLayer,
+                        'visibility',
+                        'visible'
+                    );
+
+                    // Control layer menu behavior
+                    otherLayers = toggleableLayerIds.filter(function(i) {
+                        return i !== clickedLayer
+                    })
+
+                    otherLayers.forEach(element => {
+                        map.setLayoutProperty(element, 'visibility', 'none');
+                        document.getElementById(element).className = ''
+                    });
+                }
+            };
+
+            const layers = document.getElementById('menu');
+            layers.appendChild(link);
         }
-
-        // Create a link.
-        const link = document.createElement('a');
-        link.id = id;
-        link.href = '#';
-        link.textContent = id;
-
-
-        // Show or hide layer when the toggle is clicked.
-        link.onclick = function (e) {
-          const clickedLayer = this.textContent;
-          e.preventDefault();
-          e.stopPropagation();
-
-          const visibility = map.getLayoutProperty(
-            clickedLayer,
-            'visibility'
-          );
-
-          // Toggle layer visibility by changing the layout object's visibility property.
-          if (visibility === 'visible') {
-            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
-
-            this.className = '';
-          } else {
-            this.className = 'active';
-            map.setLayoutProperty(
-              clickedLayer,
-              'visibility',
-              'visible'
-            );
-
-            // Control layer menu behavior
-            otherLayers = toggleableLayerIds.filter(function (i) {
-              return i !== clickedLayer
-            })
-
-            otherLayers.forEach(element => {
-              map.setLayoutProperty(element, 'visibility', 'none');
-              document.getElementById(element).className = ''
-            });
-          }
-        };
-
-        const layers = document.getElementById('menu');
-        layers.appendChild(link);
-      }
     });
-
-  </script>
-
+    </script>
 </body>
 
 </html>
