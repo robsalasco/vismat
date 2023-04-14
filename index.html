@@ -233,7 +233,7 @@
             },
         });
 
-
+        map.addControl(new mapboxgl.ScaleControl({position: 'bottom-right'}));
 
     });
 
@@ -320,8 +320,6 @@
             map.moveLayer("road-number-shield");
             map.moveLayer("transit-label");
             map.moveLayer("airport-label");
-
-
 
         }
     });
