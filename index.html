@@ -105,6 +105,7 @@
         background: rgba(255, 255, 255, 0.8);
         font-family: 'Open Sans', sans-serif;
     }
+
     #content h1 {
         font-size: 13px;
     }
@@ -151,12 +152,12 @@
         </nav>
     </div>
     <div id='content'>
-    <h1>Visor de simulación de cambio y uso de cobertura de suelo al año 2040, Comuna de Valdivia</h1>
-    <p>Proyecto de Instalación INS-INV-2021-05, Financiado por la Vicerrector de la Vicerrectoría de Investigación, Desarrollo y Creación Artística (VIDCA), Universidad Austral de Chile.</p>
-    <p>Investigador responsable:<br>Dr. Francisco Maturana</p>
-    <p>Investigador Asociado:<br>Mg. Mauricio Morales</p>
-    <p>Tesista y ayudante de investigación:<br>Jorge Silva R.</p>
-    <p>Desarrollador plataforma:<br>Mg. Roberto Salas</p>
+        <h1>Visor de simulación de cambio y uso de cobertura de suelo al año 2040, Comuna de Valdivia</h1>
+        <p>Proyecto de Instalación INS-INV-2021-05, Financiado por la Vicerrector de la Vicerrectoría de Investigación, Desarrollo y Creación Artística (VIDCA), Universidad Austral de Chile.</p>
+        <p>Investigador responsable:<br>Dr. Francisco Maturana</p>
+        <p>Investigador Asociado:<br>Mg. Mauricio Morales</p>
+        <p>Tesista y ayudante de investigación:<br>Jorge Silva R.</p>
+        <p>Desarrollador plataforma:<br>Mg. Roberto Salas</p>
     </div>
     <script>
     mapboxgl.accessToken = 'pk.eyJ1Ijoicm9ic2FsYXNjbyIsImEiOiJjaWcxbzh1bjAxMHhodXdsdnczZ28xOHc1In0.WkFivOlHKIMwx30ssZorBw';
@@ -166,6 +167,7 @@
         center: [-73.215981, -39.828709], // starting position [lng, lat]
         zoom: 10 // starting zoom
     });
+
 
     map.on('load', function() {
 
@@ -190,6 +192,26 @@
             "maxzoom": 14
         });
 
+        map.addSource('vector-2001', {
+            'type': 'vector',
+            'url': 'mapbox://robsalasco.7r1qojy7',
+            "minzoom": 0,
+            "maxzoom": 20
+        });
+
+        map.addSource('vector-2011', {
+            'type': 'vector',
+            'url': 'mapbox://robsalasco.b682uqoo',
+            "minzoom": 0,
+            "maxzoom": 20
+        });
+
+        map.addSource('vector-2021', {
+            'type': 'vector',
+            'url': 'mapbox://robsalasco.178p3350',
+            "minzoom": 0,
+            "maxzoom": 20
+        });
 
         map.addLayer({
             'id': '2001',
@@ -234,51 +256,81 @@
             },
         });
 
-        map.addControl(new mapboxgl.ScaleControl({position: 'bottom-right'}));
+
+        map.addLayer({
+            'id': 'vector-2001-id',
+            'type': 'fill',
+            'source': 'vector-2001',
+            'source-layer': '2001',
+            'layout': { 'visibility': 'visible' },
+            'paint': {
+                'fill-color': 'transparent',
+                'fill-opacity': 1
+            },
+        });
+
+        map.addLayer({
+            'id': 'vector-2011-id',
+            'type': 'fill',
+            'source': 'vector-2011',
+            'source-layer': '2011',
+            'layout': { 'visibility': 'none' },
+            'paint': {
+                'fill-color': 'transparent',
+                'fill-opacity': 1
+            },
+        });
+
+        map.addLayer({
+            'id': 'vector-2021-id',
+            'type': 'fill',
+            'source': 'vector-2021',
+            'source-layer': '2021',
+            'layout': { 'visibility': 'none' },
+            'paint': {
+                'fill-color': 'transparent',
+                'fill-opacity': 1
+            },
+        });
+
+        map.addControl(new mapboxgl.ScaleControl({ position: 'bottom-right' }));
 
     });
 
+
     map.on('idle', () => {
 
-        //activeLayers = .map(function (feat) {
-        //feat.filter(function(item) {
-        //     return item.layout.visibility === "none"
-        //   });
-        //});
-
-        // Enumerate ids of the layers.
         const toggleableLayerIds = ['2001', '2011', '2021'];
 
-        // Set up the corresponding toggle button for each layer.
         for (const id of toggleableLayerIds) {
-            // Skip layers that already have a button set up.
+
             if (document.getElementById(id)) {
                 continue;
             }
 
-            // Create a link.
             const link = document.createElement('a');
             link.id = id;
             link.href = '#';
             link.textContent = id;
 
 
-
-
-            // Show or hide layer when the toggle is clicked.
             link.onclick = function(e) {
                 const clickedLayer = this.textContent;
                 e.preventDefault();
                 e.stopPropagation();
+
+                //'vector-'+clickedLayer+'-id'
+
 
                 const visibility = map.getLayoutProperty(
                     clickedLayer,
                     'visibility'
                 );
 
-                // Toggle layer visibility by changing the layout object's visibility property.
                 if (visibility === 'visible') {
                     map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+                    map.setLayoutProperty('vector-' + clickedLayer + '-id', 'visibility', 'none');
+
 
                     this.className = '';
                 } else {
@@ -289,13 +341,19 @@
                         'visible'
                     );
 
-                    // Control layer menu behavior
+                    map.setLayoutProperty(
+                        'vector-' + clickedLayer + '-id',
+                        'visibility',
+                        'visible'
+                    );
+
                     otherLayers = toggleableLayerIds.filter(function(i) {
                         return i !== clickedLayer
                     })
 
                     otherLayers.forEach(element => {
                         map.setLayoutProperty(element, 'visibility', 'none');
+                        map.setLayoutProperty('vector-' + element + '-id', 'visibility', 'none');
                         document.getElementById(element).className = ''
                     });
                 }
@@ -322,6 +380,25 @@
             map.moveLayer("transit-label");
             map.moveLayer("airport-label");
 
+        }
+    });
+
+    const popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+    });
+
+
+    map.on('mousemove', (e) => {
+        //feature = e.features[0]
+
+        var fs = map.queryRenderedFeatures(e.point, { layers: ['vector-2001-id', 'vector-2011-id', 'vector-2021-id'] });
+        if (fs.length > 0) {
+            popup.setLngLat(e.lngLat)
+                .setHTML(fs[0].properties.cat)
+                .addTo(map);
+        } else {
+            popup.remove();
         }
     });
     </script>
