@@ -141,12 +141,12 @@
             <div style="display: inline-block;">
                 <label>Superficie compacta construida alta densidad</label>
                 <label>Superficie compacta baja densidad</label>
-                <label>Superficie construida tipo periurbano</label>
+                <label>Superficie construida en altura dispersa</label>
                 <label>Casas aisladas</label>
                 <label>Bosque denso</label>
                 <label>Bosque mediana densidad</label>
-                <label>Bosques o vegetación de baja densidad</label>
-                <label>Humedal</label>
+                <label>Humedal o vegetación de baja altura</label>
+                <label>Desnudos / Arena / Tierra / Roquerios</label>
                 <label>Agua</label>
             </div>
         </nav>
@@ -390,12 +390,22 @@
 
 
     map.on('mousemove', (e) => {
-        //feature = e.features[0]
+        const cat_list = {
+            55: 'Agua',
+            255: 'Desnudos / Arena / Tierra / Roquerios',
+            183: 'Humedal o vegetación de baja altura',
+            6: 'Bosque mediana densidad',
+            3: 'Bosque denso',
+            254: 'Casas aisladas',
+            253: 'Superficie construida en altura dispersa',
+            240: 'Superficie compacta baja densidad',
+            189: 'Superficie compacta construida alta densidad'
+        }
 
         var fs = map.queryRenderedFeatures(e.point, { layers: ['vector-2001-id', 'vector-2011-id', 'vector-2021-id'] });
         if (fs.length > 0) {
             popup.setLngLat(e.lngLat)
-                .setHTML(fs[0].properties.cat)
+                .setHTML(cat_list[fs[0].properties.raster_val])
                 .addTo(map);
         } else {
             popup.remove();
