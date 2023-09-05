@@ -218,6 +218,13 @@
             "maxzoom": 14
         });
 
+        map.addSource('base-2040', {
+            'type': 'raster',
+            'url': 'mapbox://robsalasco.48gyxupx',
+            "minzoom": 0,
+            "maxzoom": 14
+        });
+
         map.addSource('vector-2001', {
             'type': 'vector',
             'url': 'mapbox://robsalasco.7r1qojy7',
@@ -235,6 +242,13 @@
         map.addSource('vector-2021', {
             'type': 'vector',
             'url': 'mapbox://robsalasco.178p3350',
+            "minzoom": 0,
+            "maxzoom": 20
+        });
+
+        map.addSource('vector-2040', {
+            'type': 'vector',
+            'url': 'mapbox://robsalasco.9kshfmjy',
             "minzoom": 0,
             "maxzoom": 20
         });
@@ -282,6 +296,20 @@
             },
         });
 
+        map.addLayer({
+            'id': '2040',
+            'type': 'raster',
+            'source': 'base-2040',
+            'layout': {
+                // Make the layer visible by default.
+                'visibility': 'none'
+            },
+            paint: {
+                'raster-brightness-max': 0.6,
+                'raster-resampling': 'nearest',
+            },
+        });
+
 
         map.addLayer({
             'id': 'vector-2001-id',
@@ -319,6 +347,18 @@
             },
         });
 
+        map.addLayer({
+            'id': 'vector-2040-id',
+            'type': 'fill',
+            'source': 'vector-2040',
+            'source-layer': 'Normado_conpesoSimulation_1_r-4q8pcl',
+            'layout': { 'visibility': 'none' },
+            'paint': {
+                'fill-color': 'transparent',
+                'fill-opacity': 1
+            },
+        });
+
         map.addControl(new mapboxgl.ScaleControl({ position: 'bottom-right' }));
 
     });
@@ -326,7 +366,7 @@
 
     map.on('idle', () => {
 
-        const toggleableLayerIds = ['2001', '2011', '2021'];
+        const toggleableLayerIds = ['2001', '2011', '2021', '2040'];
 
         for (const id of toggleableLayerIds) {
 
@@ -347,13 +387,24 @@
 
                 //'vector-'+clickedLayer+'-id'
 
+                console.log(clickedLayer)
+
 
                 const visibility = map.getLayoutProperty(
                     clickedLayer,
                     'visibility'
                 );
 
-                if (clickedLayer === '2021') {
+                if (clickedLayer === '2040') {
+                    const mat = document.getElementById("graph")
+                    mat.textContent = '';
+
+                    const entry = document.createElement('p');
+                    entry.id = 'matrix';
+                    entry.innerHTML = '<p></p>';
+
+                    document.getElementById('graph').appendChild(entry);
+                } else if (clickedLayer === '2021') {
                     const mat = document.getElementById("graph")
                     mat.textContent = '';
 
@@ -464,7 +515,7 @@
             189: 'Superficie compacta construida alta densidad'
         }
 
-        var fs = map.queryRenderedFeatures(e.point, { layers: ['vector-2001-id', 'vector-2011-id', 'vector-2021-id'] });
+        var fs = map.queryRenderedFeatures(e.point, { layers: ['vector-2001-id', 'vector-2011-id', 'vector-2021-id', 'vector-2040-id'] });
         if (fs.length > 0) {
             popup.setLngLat(e.lngLat)
                 .setHTML(cat_list[fs[0].properties.raster_val])
